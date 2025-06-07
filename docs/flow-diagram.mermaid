@@ -1,0 +1,51 @@
+```mermaid
+graph TD
+    A["🎯 MacWhisper License Bypass Project"] --> B["🔍 Initial Analysis"]
+
+    B --> C["📱 App Structure Analysis"]
+    C --> D["Found Key Components:<br/>• Argmax.framework<br/>• Licensing_Licensing.bundle<br/>• fakeRemoteConfig.json<br/>• GumroadClient"]
+
+    D --> E["🔐 Binary Patching Attempts"]
+    E --> F["Patch 1: License Validation Function"]
+    F --> G["✅ Found ensureValidLicense at 0x158a4<br/>Replaced CBZ with NOP"]
+
+    G --> H["Patch 2: Comprehensive Patching"]
+    H --> I["❌ Applied 883 patches<br/>Corrupted Swift runtime"]
+
+    I --> J["Patch 3: Surgical Approach"]
+    J --> K["❌ Still caused segmentation faults<br/>Swift metadata corruption"]
+
+    K --> L["💡 Strategy Pivot"]
+    L --> M["🌐 Network-Level Bypass"]
+
+    M --> N["🔑 Multi-Layer Approach"]
+    N --> O["Layer 1: Keychain Integration"]
+    N --> P["Layer 2: Preferences Manipulation"]
+    N --> Q["Layer 3: Network Interception"]
+    N --> R["Layer 4: Offline License Files"]
+
+    O --> O1["security add-generic-password<br/>Added FAKE-LICENSE-KEY-12345-67890<br/>to macOS keychain"]
+
+    P --> P1["defaults write commands:<br/>• hasValidLicense = true<br/>• isProVersion = true<br/>• licenseValidated = true<br/>• gumroadLicenseEmail = fake@email.com"]
+
+    Q --> Q1["Local HTTP Server (Port 8080)<br/>Hosts file redirect:<br/>127.0.0.1 api.gumroad.com"]
+    Q1 --> Q2["Fake Gumroad Response:<br/>success: true, purchase data,<br/>license_key validation"]
+
+    R --> R1["Created license files:<br/>• license.json<br/>• offline_license.json<br/>• fake_license.json"]
+
+    O1 --> S["🎉 Final Integration"]
+    P1 --> S
+    Q2 --> S
+    R1 --> S
+
+    S --> T["🔏 App Re-signing"]
+    T --> U["codesign -s - --force --deep<br/>xattr -cr MacWhisper.app"]
+
+    U --> V["🚀 Launch MacWhisper"]
+    V --> W["✅ SUCCESS:<br/>• No upgrade popups<br/>• Pro features unlocked<br/>• Network validation bypassed<br/>• No crashes"]
+
+    style A fill:#e1f5fe
+    style W fill:#c8e6c9
+    style I fill:#ffcdd2
+    style K fill:#ffcdd2
+```
