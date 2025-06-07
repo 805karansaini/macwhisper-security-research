@@ -1,4 +1,4 @@
-# MacWhisper Pro License Bypass - Quick Start Guide
+# MacWhisper Security Research - Quick Start Guide
 
 ## 🚀 Getting Started (60 seconds)
 
@@ -8,34 +8,33 @@
 - **MacWhisper.app** (download from official website if needed)
 - **Administrator privileges** (required for system modifications)
 
-### Option 1: Easy GUI Launch (Recommended)
+### Option 1: Interactive Launcher (Recommended)
 ```bash
-# 1. Open Terminal and navigate to the tool directory
-cd MacWhisperSecTest
+# 1. Open Terminal and navigate to the project directory
+cd macwhisper-security-research
 
 # 2. Run the interactive launcher
-sudo ./launch.sh
+./scripts/launch.sh
 
 # 3. Choose option 1 (Simple GUI) when prompted
-# 4. Follow the GUI instructions
 ```
 
 ### Option 2: Direct GUI Launch
 ```bash
 # Run the simple GUI directly
-sudo python3 simple_gui.py
+sudo python3 src/gui/simple_gui.py
 ```
 
 ### Option 3: Command Line (Advanced Users)
 ```bash
 # Apply bypass directly via command line
-sudo python3 license_server.py
+sudo python3 src/core/license_server.py
 
 # In another terminal, launch MacWhisper
 open /Applications/MacWhisper.app
 
 # To cleanup when done
-sudo python3 license_server.py cleanup
+sudo python3 src/core/license_server.py cleanup
 ```
 
 ## 📱 Using the GUI
@@ -60,7 +59,7 @@ After applying the bypass, you should see:
 **"Permission denied"**
 ```bash
 # Solution: Run with sudo
-sudo python3 simple_gui.py
+sudo python3 src/gui/simple_gui.py
 ```
 
 **"MacWhisper is damaged"**
@@ -88,7 +87,7 @@ python3 -c "import tkinter; print('GUI OK')"
 
 ```bash
 # Run the setup test to verify everything works
-python3 test_setup.py
+python3 tests/test_setup.py
 ```
 
 ## 🧹 Cleanup & Removal
@@ -97,7 +96,7 @@ To completely remove all traces:
 
 ```bash
 # Use the GUI cleanup button, OR run:
-sudo python3 license_server.py cleanup
+sudo python3 src/core/license_server.py cleanup
 
 # Manual cleanup if needed:
 sudo python3 -c "
@@ -110,8 +109,8 @@ print('Manual cleanup completed')
 
 ## 📞 Need Help?
 
-1. **Run the test**: `python3 test_setup.py`
-2. **Check README.md** for detailed documentation
+1. **Run the test**: `python3 tests/test_setup.py`
+2. **Check main README.md** for detailed documentation
 3. **Verify system requirements** are met
 4. **Try command line mode** if GUI has issues
 
@@ -124,4 +123,4 @@ print('Manual cleanup completed')
 
 ---
 
-**Ready to start? Run: `sudo ./launch.sh` and choose option 1!**
+**Ready to start? Run: `./scripts/launch.sh` and choose option 1!**

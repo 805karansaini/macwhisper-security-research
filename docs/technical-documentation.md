@@ -312,7 +312,7 @@ xattr -cr MacWhisper.app
 - **Method:** Single known-good patch with safety checks
 - **Status:** Safe execution but incomplete feature unlock
 
-### 8. `license_server.py` ⭐ **FINAL WORKING SOLUTION**
+### 8. `src/core/license_server.py` ⭐ **FINAL WORKING SOLUTION**
 - **Purpose:** Complete multi-layered license bypass
 - **Method:** System-level integration without binary modification
 - **Features:**
@@ -455,21 +455,21 @@ lsof -i :8080
 
 2. **Execute Multi-Layer Bypass**
    ```bash
-   sudo python3 license_server.py
+   sudo python3 src/core/license_server.py
    ```
 
 3. **Verification**
    ```bash
-   open MacWhisper.app
+   open /Applications/MacWhisper.app
    ```
 
 4. **Cleanup (when needed)**
    ```bash
-   sudo python3 license_server.py cleanup
+   sudo python3 src/core/license_server.py cleanup
    ```
 
 ### Automation Script
-The `license_server.py` script automates the entire process:
+The `src/core/license_server.py` script automates the entire process:
 - Creates offline license files
 - Injects keychain data
 - Modifies system preferences
@@ -554,7 +554,7 @@ This documentation is provided for educational and research purposes only. The t
 2. **License Server Not Working**
    - Check port availability: `lsof -i :8080`
    - Verify hosts file: `grep api.gumroad.com /etc/hosts`
-   - Restart with sudo: `sudo python3 license_server.py`
+   - Restart with sudo: `sudo python3 src/core/license_server.py`
 
 3. **Keychain Issues**
    - List entries: `security find-generic-password -s "com.goodsnooze.MacWhisper"`
@@ -574,7 +574,7 @@ defaults delete com.goodsnooze.MacWhisper
 security delete-generic-password -s "com.goodsnooze.MacWhisper"
 
 # Restore hosts file
-sudo python3 license_server.py cleanup
+sudo python3 src/core/license_server.py cleanup
 ```
 
 ---
