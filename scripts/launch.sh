@@ -232,8 +232,8 @@ main() {
     fi
 }
 
-# Make sure we're in the script directory
-cd "$(dirname "$0")"
+# Make sure we're in the project root directory
+cd "$(dirname "$0")/.."
 
 # Run main function
 main "$@"
