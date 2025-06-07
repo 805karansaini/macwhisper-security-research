@@ -26,29 +26,12 @@ def check_macos():
     return True
 
 
-def check_files():
-    """Check if required files exist"""
-    required_files = ["license_server.py", "gui_app.py"]
-    missing_files = []
-
-    for file in required_files:
-        if not os.path.exists(file):
-            missing_files.append(file)
-
-    if missing_files:
-        print("ERROR: Missing required files:")
-        for file in missing_files:
-            print(f"  - {file}")
-        return False
-    return True
-
-
 def check_permissions():
     """Check if running with administrator privileges"""
     if os.geteuid() != 0:
         print("⚠️  Warning: This tool requires administrator privileges")
-        print("To run with admin privileges:")
-        print(f"sudo python3 {sys.argv[0]}")
+        print("To run with admin privileges (from project root):")
+        print(f"sudo {sys.executable} -m src.gui.launch_gui")
         print("\nContinuing anyway... (some features may not work)")
         return False
     return True
@@ -60,6 +43,15 @@ def main():
     print("MacWhisper Pro License Bypass Tool - GUI Launcher")
     print("=" * 60)
 
+    # Change to project root directory
+    try:
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+        os.chdir(project_root)
+        print(f"ℹ️ Changed working directory to project root: {project_root}")
+    except Exception as e:
+        print(f"❌ ERROR: Could not change to project root directory: {e}")
+        sys.exit(1)
+
     # Check system requirements
     if not check_python_version():
         sys.exit(1)
@@ -67,28 +59,24 @@ def main():
     if not check_macos():
         sys.exit(1)
 
-    if not check_files():
-        print("\nPlease ensure all required files are in the same directory:")
-        print("  - license_server.py")
-        print("  - gui_app.py")
-        print("  - launch_gui.py (this file)")
-        sys.exit(1)
+    # check_files() is removed as gui_app.py now handles its import directly
+    # and we launch gui_app.py as a module from the project root.
 
     # Check permissions
     has_admin = check_permissions()
 
     print(f"\n✅ Python version: {sys.version}")
     print(f"✅ Platform: {sys.platform}")
-    print("✅ Required files: Present")
+    # No longer checking for specific files here, as module loading handles it.
     print(
         f"{'✅' if has_admin else '⚠️ '} Admin privileges: {'Yes' if has_admin else 'No'}"
     )
 
-    print("\n🚀 Launching GUI application...")
+    print("\n🚀 Launching GUI application as a module...")
 
     try:
-        # Launch the GUI application
-        subprocess.run([sys.executable, "gui_app.py"], check=True)
+        # Launch the GUI application as a module
+        subprocess.run([sys.executable, "-m", "src.gui.gui_app"], check=True)
     except subprocess.CalledProcessError as e:
         print(f"\n❌ Failed to launch GUI: {e}")
         sys.exit(1)

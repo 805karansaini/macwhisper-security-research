@@ -97,18 +97,20 @@ class MacWhisperBypass:
                 self.log("✅ Hosts file already modified", Colors.YELLOW)
                 return True
 
-            # Add entry
-            cmd = f'echo "{hosts_entry}" | sudo tee -a /etc/hosts'
-            result = self.run_command(cmd)
-            if result and result.returncode == 0:
+            # Add entry using Python file I/O
+            try:
+                with open("/etc/hosts", "a") as f:
+                    f.write(f"\n{hosts_entry}\n")
                 self.log("✅ Modified hosts file for API redirection", Colors.GREEN)
                 return True
-            else:
-                self.log("❌ Failed to modify hosts file", Colors.RED)
+            except (IOError, PermissionError) as e_io:
+                self.log(f"❌ Failed to write to hosts file: {e_io}", Colors.RED)
                 return False
-
-        except Exception as e:
-            self.log(f"❌ Error modifying hosts file: {e}", Colors.RED)
+            except Exception as e_generic: # Catch any other unexpected error
+                self.log(f"❌ Unexpected error modifying hosts file: {e_generic}", Colors.RED)
+                return False
+        except Exception as e: # For the initial read operation or other issues
+            self.log(f"❌ Error accessing hosts file: {e}", Colors.RED)
             return False
 
     def create_keychain_entry(self):

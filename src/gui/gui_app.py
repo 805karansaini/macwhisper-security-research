@@ -15,10 +15,10 @@ from tkinter import filedialog, messagebox, scrolledtext, ttk
 
 # Import license_server functionality
 try:
-    from license_server import GumroadHandler, MacWhisperBypass
+    from src.core.license_server import GumroadHandler, MacWhisperBypass
 except ImportError:
-    print("ERROR: license_server.py module not found!")
-    print("Make sure license_server.py is in the same directory as gui_app.py")
+    print("ERROR: src.core.license_server module not found!")
+    print("Ensure the application is run from the project root and the module exists.")
     sys.exit(1)
 
 

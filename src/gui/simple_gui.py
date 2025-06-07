@@ -15,183 +15,7 @@ import time
 import tkinter as tk
 from tkinter import filedialog, messagebox, scrolledtext, ttk
 
-
-class SimpleLicenseBypass:
-    """Simplified license bypass implementation"""
-
-    def __init__(self, app_path="/Applications/MacWhisper.app"):
-        self.app_path = app_path
-        self.license_key = "FAKE-LICENSE-KEY-12345-67890"
-        self.license_email = "fake@email.com"
-        self.backup_hosts = None
-
-    def run_command(self, cmd, check=False):
-        """Run shell command"""
-        try:
-            if isinstance(cmd, str):
-                result = subprocess.run(
-                    cmd, shell=True, capture_output=True, text=True, check=check
-                )
-            else:
-                result = subprocess.run(
-                    cmd, capture_output=True, text=True, check=check
-                )
-            return result
-        except subprocess.CalledProcessError:
-            return None
-
-    def check_app_exists(self):
-        """Check if MacWhisper app exists"""
-        return os.path.exists(self.app_path)
-
-    def backup_hosts_file(self):
-        """Backup the original hosts file"""
-        try:
-            with open("/etc/hosts", "r") as f:
-                self.backup_hosts = f.read()
-            return True
-        except Exception:
-            return False
-
-    def modify_hosts_file(self):
-        """Add Gumroad API redirect to hosts file"""
-        try:
-            with open("/etc/hosts", "r") as f:
-                current_hosts = f.read()
-
-            if "api.gumroad.com" not in current_hosts:
-                cmd = 'echo "127.0.0.1 api.gumroad.com" | sudo tee -a /etc/hosts'
-                result = self.run_command(cmd)
-                return result and result.returncode == 0
-            return True
-        except Exception:
-            return False
-
-    def create_keychain_entry(self):
-        """Add fake license key to macOS keychain"""
-        cmd = [
-            "security",
-            "add-generic-password",
-            "-s",
-            "com.goodsnooze.MacWhisper",
-            "-a",
-            "gumroadLicenseKey_Key",
-            "-w",
-            self.license_key,
-            "-T",
-            self.app_path,
-            "-U",
-        ]
-        result = self.run_command(cmd)
-        return result is not None
-
-    def set_preferences(self):
-        """Set application preferences"""
-        preferences = [
-            ("hasValidLicense", "bool", "true"),
-            ("isProVersion", "bool", "true"),
-            ("licenseValidated", "bool", "true"),
-            ("gumroadLicenseEmail", "string", self.license_email),
-        ]
-
-        success_count = 0
-        for key, type_str, value in preferences:
-            cmd = f"defaults write com.goodsnooze.MacWhisper {key} -{type_str} {value}"
-            result = self.run_command(cmd)
-            if result and result.returncode == 0:
-                success_count += 1
-
-        return success_count > 0
-
-    def create_license_files(self):
-        """Create offline license files"""
-        license_data = {
-            "license_key": self.license_key,
-            "email": self.license_email,
-            "purchase_date": "2024-01-01T00:00:00Z",
-            "verified": True,
-            "pro_enabled": True,
-        }
-
-        try:
-            license_path = f"{self.app_path}/Contents/Resources/license.json"
-            os.makedirs(os.path.dirname(license_path), exist_ok=True)
-            with open(license_path, "w") as f:
-                json.dump(license_data, f, indent=2)
-            return True
-        except Exception:
-            return False
-
-    def resign_app(self):
-        """Re-sign the application"""
-        # Remove quarantine
-        cmd1 = ["xattr", "-cr", self.app_path]
-        self.run_command(cmd1)
-
-        # Remove signature
-        cmd2 = ["codesign", "--remove-signature", self.app_path]
-        self.run_command(cmd2)
-
-        # Re-sign
-        cmd3 = ["codesign", "-s", "-", "--force", "--deep", self.app_path]
-        result = self.run_command(cmd3)
-        return result and result.returncode == 0
-
-    def cleanup(self):
-        """Restore original settings"""
-        # Restore hosts file
-        if self.backup_hosts:
-            try:
-                with open("/etc/hosts", "w") as f:
-                    f.write(self.backup_hosts)
-            except Exception:
-                pass
-
-        # Remove keychain entry
-        cmd = ["security", "delete-generic-password", "-s", "com.goodsnooze.MacWhisper"]
-        self.run_command(cmd)
-
-        # Reset preferences
-        cmd = "defaults delete com.goodsnooze.MacWhisper"
-        self.run_command(cmd)
-
-
-class FakeGumroadHandler(http.server.BaseHTTPRequestHandler):
-    """HTTP handler for fake license responses"""
-
-    def log_message(self, format, *args):
-        pass
-
-    def do_POST(self):
-        if self.path == "/v2/licenses/verify":
-            response = {
-                "success": True,
-                "uses": 0,
-                "purchase": {
-                    "id": "fake_purchase_12345",
-                    "email": "fake@email.com",
-                    "price": 2900,
-                    "currency": "USD",
-                    "license_key": "FAKE-LICENSE-KEY-12345-67890",
-                    "refunded": False,
-                    "chargebacked": False,
-                    "test": False,
-                },
-            }
-
-            self.send_response(200)
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps(response).encode("utf-8"))
-        else:
-            self.send_response(404)
-            self.end_headers()
-
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        self.wfile.write(b"Fake Gumroad Server Running")
+from src.core.license_server import MacWhisperBypass, GumroadHandler
 
 
 class SimpleGUI:
@@ -345,7 +169,7 @@ Note: Requires administrator privileges (run with sudo)"""
         try:
             self.log("Starting MacWhisper bypass...")
 
-            self.bypass = SimpleLicenseBypass(self.app_path.get())
+            self.bypass = MacWhisperBypass(app_path=self.app_path.get(), verbose=False)
 
             if not self.bypass.check_app_exists():
                 self.log("ERROR: MacWhisper app not found!")
@@ -365,9 +189,12 @@ Note: Requires administrator privileges (run with sudo)"""
             self.bypass.set_preferences()
 
             self.log("📄 Creating license files...")
-            self.bypass.create_license_files()
+            self.bypass.create_offline_license_files()
 
             self.log("✍️ Re-signing app...")
+            self.log("   Removing app signature...")
+            self.bypass.remove_app_signature()
+            self.log("   Re-signing app...")
             if not self.bypass.resign_app():
                 self.log("WARNING: Re-signing failed")
 
@@ -419,7 +246,7 @@ Note: Requires administrator privileges (run with sudo)"""
         def server_worker():
             try:
                 self.server_running = True
-                with socketserver.TCPServer(("", 8080), FakeGumroadHandler) as httpd:
+                with socketserver.TCPServer(("", 8080), GumroadHandler) as httpd:
                     self.log("🌐 License server started on port 8080")
                     while self.server_running:
                         httpd.handle_request()

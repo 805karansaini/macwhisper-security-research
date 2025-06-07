@@ -125,13 +125,13 @@ show_menu() {
 
 launch_simple_gui() {
     print_color $BLUE "🚀 Launching Simple GUI..."
-    exec python3 src/gui/simple_gui.py
+    exec python3 -m src.gui.simple_gui
 }
 
 launch_advanced_gui() {
     print_color $BLUE "🚀 Launching Advanced GUI..."
     if [[ -f "src/gui/gui_app.py" ]]; then
-        exec python3 src/gui/gui_app.py
+        exec python3 -m src.gui.gui_app
     else
         print_color $RED "❌ Advanced GUI not available (src/gui/gui_app.py missing)"
         print_color $CYAN "Falling back to Simple GUI..."
@@ -141,7 +141,7 @@ launch_advanced_gui() {
 
 launch_cli() {
     print_color $BLUE "🚀 Launching Command Line Mode..."
-    exec python3 src/core/license_server.py
+    exec python3 -m src.core.license_server
 }
 
 main() {
